@@ -163,7 +163,7 @@
                         <h1 class="card-title h5">Mutants and Masterminds</h5>
                         <h2 class="card-subtitle h6 mb-4 text-muted">Past Rolls</h5>
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive-sm">
                         <table class="table">
                             <thead>
                                 <tr>
@@ -174,14 +174,40 @@
                                 <tr v-for="(roll, index) in rolls"
                                     :class="{'table-success': (calcResult(roll) - roll.difficulty) >= 0, 'table-danger': (calcResult(roll) - roll.difficulty) < 0}">
                                     <th scope="row">{{ index }}</th>
-                                    <td>{{ roll.name }}</td>
-                                    <td>{{ roll.description }}</td>
-                                    <td>{{ roll.ability }}</td>
-                                    <td>+{{ roll.modifiersPlus }} / -{{ roll.modifiersMinus }}</td>
-                                    <td>{{ roll.difficulty }}</td>
-                                    <td>{{ roll.diceResult }}</td>
-                                    <td>{{ roll.result }}</td>
-                                    <td>{{ roll.degree }}</td>
+                                    <td>
+                                        <i class="bi bi-person-circle me-1"></i>
+                                        {{ roll.name }}
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-exclamation-circle-fill me-1"></i>
+                                        {{ roll.description }}
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-fire"></i>
+                                        {{ roll.ability }}
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-plus"></i>
+                                        {{ roll.modifiersPlus }} /
+                                        <i class="bi bi-dash"></i>
+                                        {{ roll.modifiersMinus }}
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-bar-chart-fill me-1"></i>
+                                        {{ roll.difficulty }}
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-dice-6-fill me-1"></i>
+                                        {{ roll.diceResult }}
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-file-diff-fill me-1"></i>
+                                        {{ roll.result }}
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-file-break-fill me-1"></i>
+                                        {{ roll.degree }}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
