@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>D20 Dice Roll</title>
+        <link rel="stylesheet" href="/css/bootstrap.css">
+        <link rel="stylesheet" href="/css/icons.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="icon" href="./favicon.ico" type="image/x-icon">
+        <script src="/js/vue.runtime.js"></script>
+    </head>
+    <body>
+        <main id="app" class="container">
+
+            <section v-if="!history" class="mt-5">
+
+                <ul class="nav nav-tabs border-bottom-0 mx-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Dice Roller</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" @click.prevent="togglePage()">Past Rolls</a>
+                    </li>
+                </ul>
+                <div class="card mb-3">
+                    <div class="card-body">
+
+                        <h1 class="card-title h5">Mutants and Masterminds</h5>
+                        <h2 class="card-subtitle h6 mb-4 text-muted">D20 Dice Roller</h5>
+
+                        <form @submit.prevent="onSubmit($event)" novalidate class="row align-items-start justify-content-end">
+                            <div class="col-sm-12 mb-3">
+                                <div class="input-group has-validation">
+                                    <div :class="{'form-floating': true, 'is-invalid': submited && !name}">
+                                        <input :class="{'form-control': true, 'is-invalid': submited && !name}"
+                                            type="text" id="name" placeholder="Name"
+                                            maxlength="120" required v-model="name">
+                                        <label for="name">Name</label>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        This field is required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 mb-3">
+                                <div class="input-group has-validation">
+                                    <div :class="{'form-floating': true, 'is-invalid': submited && !description}">
+                                        <input :class="{'form-control': true, 'is-invalid': submited && !description}"
+                                            type="text" id="description" placeholder="Description"
+                                            maxlength="120" required v-model="description">
+                                        <label for="description">Description</label>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        This field is required.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="input-group has-validation">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="number" id="ability" placeholder="Ability" min="0" v-model="ability">
+                                        <label for="ability">Ability</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="input-group has-validation">
+                                    <div :class="{'form-floating': true, 'is-invalid': submited && !difficulty}">
+                                        <input :class="{'form-control': true, 'is-invalid': submited && !difficulty}"
+                                                type="number" id="difficulty" placeholder="Difficulty"
+                                                min="0" required v-model="difficulty">
+                                        <label for="difficulty">Difficulty</label>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        This field is required.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 align-self-lg-start mb-3">
+                                <label class="form-label">Modifiers</label>
+                                <div class="input-group has-validation">
+                                    <div class="form-floating">
+                                        <input class="form-control" type="number" id="modifiersPlus" placeholder="Plus" min="0" v-model="modifiersPlus">
+                                        <label for="modifiersPlus">Plus (+)</label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input class="form-control" type="number" id="modifiersMinus" placeholder="Minus" min="0" v-model="modifiersMinus">
+                                        <label for="modifiersMinus">Minus (-)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary btn-lg" :disabled="diceResult">
+                                    Roll
+                                </button>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button"
+                                        class="btn btn-secondary btn-lg"
+                                        @click.prevent="resetForm()"
+                                        :disabled="!diceResult">
+                                    Clear
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+                <div v-if="diceResult"
+                    :class="{
+                        'alert': true,
+                        'fade': true,
+                        'show': true,
+                        'alert-success': (result - difficulty) >= 0,
+                        'alert-danger': (result - difficulty) < 0
+                    }" role="alert">
+                    <div>
+                        <i class="bi bi-person-circle me-1"></i>
+                        {{ name }} <strong>{{ (result - difficulty) >= 0 ? 'succeed!' : 'fail!' }}</strong>
+                    </div>
+                    <div>
+                        <i class="bi bi-exclamation-circle-fill me-1"></i>
+                        <strong>Action:</strong> {{ description }}
+                    </div>
+                    <div>
+                        <i class="bi bi-dice-6-fill me-1"></i><strong>Dice:</strong> {{ diceResult }} |
+                        <i class="bi bi-file-diff-fill me-1"></i><strong>Result:</strong> {{ result }}
+                    </div>
+                    <div>
+                        <i class="bi bi-bar-chart-fill me-1"></i><strong>Difficulty:</strong> {{ difficulty }} |
+                        <i class="bi bi-file-break-fill me-1"></i>
+                        <span v-if="(result - difficulty) >= 0">
+                            <strong>Degree:</strong> {{ degree }} success(es)
+                        </span>
+                        <span v-else>
+                            <strong>Degree:</strong> {{ degree > 0 ? degree + ' fail(s)' : 'fail'  }}
+                        </span>
+                    </div>
+                </div>
+
+            </section>
+
+            <section v-if="history" class="my-5">
+                <ul class="nav nav-tabs border-bottom-0 mx-3">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" @click.prevent="togglePage()">Dice Roller</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Past Rolls</a>
+                    </li>
+                </ul>
+                <div class="card">
+
+                    <div class="card-body">
+                        <h1 class="card-title h5">Mutants and Masterminds</h5>
+                        <h2 class="card-subtitle h6 mb-4 text-muted">Past Rolls</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col" v-for="(column, index) in columns">{{ column }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr v-for="(roll, index) in rolls"
+                                    :class="{'table-success': (calcResult(roll) - roll.difficulty) >= 0, 'table-danger': (calcResult(roll) - roll.difficulty) < 0}">
+                                    <th scope="row">{{ index }}</th>
+                                    <td>{{ roll.name }}</td>
+                                    <td>{{ roll.description }}</td>
+                                    <td>{{ roll.ability }}</td>
+                                    <td>+{{ roll.modifiersPlus }} / -{{ roll.modifiersMinus }}</td>
+                                    <td>{{ roll.difficulty }}</td>
+                                    <td>{{ roll.diceResult }}</td>
+                                    <td>{{ roll.result }}</td>
+                                    <td>{{ roll.degree }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+        <script src="/js/scripts.js"></script>
+    </body>
+</html>
