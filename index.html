@@ -170,7 +170,13 @@
                                     <th scope="col" v-for="(column, index) in columns">{{ column }}</th>
                                 </tr>
                             </thead>
-                            <tbody class="table-group-divider">
+                            <tbody v-if="!rolls.length" class="table-group-divider">
+                                <td colspan="9" class="text-center">
+                                    <i class="bi bi-emoji-frown-fill"></i>
+                                    No past rows available.
+                                </td>
+                            </tbody>
+                            <tbody v-if="rolls.length" class="table-group-divider">
                                 <tr v-for="(roll, index) in rolls"
                                     :class="{'table-success': (calcResult(roll) - roll.difficulty) >= 0, 'table-danger': (calcResult(roll) - roll.difficulty) < 0}">
                                     <th scope="row">{{ index }}</th>
